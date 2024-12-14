@@ -57,4 +57,7 @@ dependencies {
     implementation ("com.squareup.picasso:picasso:2.71828")
     implementation(libs.volley)
 
+    implementation ("com.google.android.material:material:1.6.0")
+    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
 }
