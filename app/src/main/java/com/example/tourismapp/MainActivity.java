@@ -2,7 +2,9 @@ package com.example.tourismapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -73,13 +75,57 @@ public class MainActivity extends AppCompatActivity {
         toggle.syncState();
 
         // Set up the navigation view
+//        NavigationView navigationView = findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(item -> {
+//            // Handle navigation item clicks here
+//            drawerLayout.closeDrawers();
+//            return true;
+//        });
+        drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            // Handle navigation item clicks here
-            drawerLayout.closeDrawers();
-            return true;
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.nav_home) {
+                    // Open Main Activity
+                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                } else if (id == R.id.nav_booked_places) {
+                    // Open Booked Places Activity
+                    startActivity(new Intent(MainActivity.this, BookedPlacesActivity.class));
+                } else if (id == R.id.nav_about) {
+                    // Show About Dialog
+                    startActivity(new Intent(MainActivity.this, AboutActivity.class));
+
+                } else if (id == R.id.nav_help) {
+                    // Show Help Dialog
+                    Toast.makeText(MainActivity.this, "Help is on development", Toast.LENGTH_SHORT).show();
+
+                } else if (id == R.id.nav_logout) {
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                     } else if (id == R.id.nav_exit_app) {
+                    // Logout Functionality
+                    Toast.makeText(MainActivity.this, "Thank you for being with us.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                drawerLayout.closeDrawers(); // Close the drawer after clicking
+                return true;
+            }
         });
     }
+
+    private void showAboutDialog() {
+        // Use an AlertDialog to show the about information
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("About the App")
+                .setMessage("This app is developed by Group One. Compatible with Android 5.0+.")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+
+
 
     @Override
     public void onBackPressed() {

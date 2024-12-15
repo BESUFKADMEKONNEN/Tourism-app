@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <!-- App Description -->
+    <TextView
+        android:id="@+id/appDescriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="App Description"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:padding="8dp"
+        android:textColor="#000000"/>
+
+    <!-- Developer Information -->
+    <TextView
+        android:id="@+id/developerInfoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Developer Info"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:padding="8dp"
+        android:textColor="#000000"/>
+
+    <!-- Version Information -->
+    <TextView
+        android:id="@+id/versionInfoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Version Info"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:padding="8dp"
+        android:textColor="#000000"/>
+
+</LinearLayout>

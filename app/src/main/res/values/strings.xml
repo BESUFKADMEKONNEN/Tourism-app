@@ -20,4 +20,22 @@
     <string name="todo">TODO</string>
     <string name="drawer_open" />
     <string name="drawer_close">\n</string>
+    <string name="menu_logout">Logout\n</string>
+    <string name="menu_about">About\n</string>
+    <string name="menu_booked_places">Booked places\n</string>
+    <string name="help">Help</string>
+    <string name="menu_exit_app">Close app\n</string>
+    <string name="register">Register</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="last_name">Last Name</string>
+    <string name="first_name">First Name</string>
+    <string name="upload_profile_image">Upload Profile Image</string>
+
+    <string-array name="gender_options">
+        <item>Sex</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>
