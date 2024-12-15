@@ -30,9 +30,14 @@
             android:exported="true"/>
         <activity
             android:name=".AboutActivity"
-            android:exported="false" />
-        <activity android:name=".DestinationDetailActivity" />
-        <activity android:name=".BookedPlacesActivity" />
+            android:exported="false"
+            android:theme="@style/Theme.TourismApp.NoActionBar"
+            />
+        <activity android:name=".DestinationDetailActivity"
+            android:theme="@style/Theme.TourismApp.NoActionBar"
+            />
+        <activity android:name=".BookedPlacesActivity"
+            android:theme="@style/Theme.TourismApp.NoActionBar"/>
         <activity
             android:name=".MainActivity"
             android:exported="false"

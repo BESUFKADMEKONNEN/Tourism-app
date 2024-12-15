@@ -90,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 if (id == R.id.nav_home) {
                     // Open Main Activity
-                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    Toast.makeText(MainActivity.this, "You are already in Home Page", Toast.LENGTH_SHORT).show();
+
                 } else if (id == R.id.nav_booked_places) {
                     // Open Booked Places Activity
                     startActivity(new Intent(MainActivity.this, BookedPlacesActivity.class));

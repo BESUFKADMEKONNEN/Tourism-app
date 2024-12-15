@@ -32,6 +32,8 @@
     <string name="last_name">Last Name</string>
     <string name="first_name">First Name</string>
     <string name="upload_profile_image">Upload Profile Image</string>
+    <string name="click_me_for_wikipedia">Click Me for Wikipedia</string>
+    <string name="open_in_google_maps">Open in Google Maps</string>
 
     <string-array name="gender_options">
         <item>Sex</item>

@@ -54,6 +54,10 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 
+
+        implementation ("org.mongodb:mongodb-driver-sync:4.4.0")
+
+
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
     implementation ("com.squareup.picasso:picasso:2.71828")
     implementation(libs.volley)
