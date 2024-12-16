@@ -3,6 +3,7 @@ package com.example.tourismapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +13,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
@@ -30,6 +35,8 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
+        FirebaseApp.initializeApp(RegistrationActivity.this);
 
         // Initialize views
         firstNameEditText = findViewById(R.id.firstNameEditText);
@@ -72,8 +79,7 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-
-        if(Objects.equals(gender, "Sex")){
+        if (gender.equals("Sex")) {
             Toast.makeText(this, "Please select Your Gender", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -82,17 +88,40 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
-        // Handle image upload if needed
-//        if (!isImageUploaded) {
-//            Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
 
-        // Handle successful registration (e.g., save to database or SharedPreferences)
-        Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
-        // Proceed to next activity (e.g., MainActivity)
-        startActivity(new Intent(this, LoginActivity.class));
+        // Handle image upload if needed
+        // if (!isImageUploaded) {
+        //     Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
+        //     return;
+        // }
+Log.i("first 1","starting");
+        // Get a reference to the Firebase Database
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        // Create a unique user ID (You can use Firebase Authentication for real login system)
+        String userId = database.push().getKey();
+
+        // Create the user object
+        User newUser = new User(firstName, lastName, gender, username, password, ""); // Add profile image URL if applicable
+
+        Log.i("first 1","starting "+userId);
+        // Save the user data under the user ID
+        if (userId != null) {
+
+            database.child("users").child(userId).setValue(newUser)
+                    .addOnCompleteListener(task -> {
+                        Log.i("first 1","starting"+task);
+                        if (task.isSuccessful()) {
+                            Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                            // Proceed to next activity (e.g., MainActivity)
+                            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                        } else {
+                            Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
+
 
     private void openImageSelector() {
         Intent intent = new Intent(Intent.ACTION_PICK);
