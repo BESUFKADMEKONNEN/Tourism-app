@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -81,8 +84,31 @@ public class MainActivity extends AppCompatActivity {
 //            drawerLayout.closeDrawers();
 //            return true;
 //        });
+
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        // Get header view to access header elements
+        View headerView = navigationView.getHeaderView(0);
+        ImageView profileImage = headerView.findViewById(R.id.profile_image);
+        TextView userEmail = headerView.findViewById(R.id.user_email);
+
+        // Simulating authenticated user data
+
+
+        String authenticatedEmail = AuthUser.username ; // Replace with actual user data
+        userEmail.setText(authenticatedEmail);
+
+        // Set a click listener for the profile image
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to ProfileActivity when the image is clicked
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
