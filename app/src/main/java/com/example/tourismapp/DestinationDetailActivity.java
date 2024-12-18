@@ -18,6 +18,12 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +59,8 @@ public class DestinationDetailActivity extends AppCompatActivity {
         mapButton = findViewById(R.id.openMapButton);
         bookButton = findViewById(R.id.bookButton);
 
+        FirebaseApp.initializeApp(DestinationDetailActivity.this);
+
         // Set data
         destinationName.setText(name);
         destinationDetails.setText(Html.fromHtml(details));
@@ -80,6 +88,7 @@ public class DestinationDetailActivity extends AppCompatActivity {
         });
 
         bookButton.setOnClickListener(v -> {
+            addBookmark(pageId,name,details,imageUrl,wikiUrl);
             Toast.makeText(this, "Booking feature coming soon!", Toast.LENGTH_SHORT).show();
         });
     }
@@ -129,6 +138,64 @@ public class DestinationDetailActivity extends AppCompatActivity {
         // Add the request to the Volley request queue
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
+
+/*
+    private void addBookmark(String pageId,String name,String details,String imageUrl,String wikiUrl) {
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        // Create a unique user ID (You can use Firebase Authentication for real login system)
+        String userId = database.push().getKey();
+
+        // Create the user object
+        Bookmark bookmark = new Bookmark(pageId,name,details,imageUrl,wikiUrl); // Add profile image URL if applicable
+        String bookmarkId = database.push().getKey();
+        if (bookmarkId != null) {
+
+            database.child("bookmarks").child(bookmarkId).setValue(bookmark)
+                    .addOnCompleteListener(task -> {
+                        Log.i("first 1","starting"+task);
+                        if (task.isSuccessful()) {
+                            Toast.makeText(DestinationDetailActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                            // Proceed to next activity (e.g., MainActivity)
+                            startActivity(new Intent(DestinationDetailActivity.this, LoginActivity.class));
+                        } else {
+                            Toast.makeText(DestinationDetailActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+*/
+
+    public void addBookmark(String pageId,String name,String details,String imageUrl,String wikiUrl) {
+
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("bookmarks");
+
+        // Query Firebase for existing bookmarks with the same title (or URL)
+        databaseReference.orderByChild("pageId").equalTo(pageId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // If the dataSnapshot is not empty, the bookmark already exists
+                if (dataSnapshot.exists()) {
+                    // Handle case where bookmark already exists
+                    Toast.makeText(DestinationDetailActivity.this, "Bookmark already exists!", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Add the bookmark if it doesn't exist
+                    Bookmark bookmark = new Bookmark(pageId,name,details,imageUrl,wikiUrl); // Add profile image URL if applicable
+                    databaseReference.push().setValue(bookmark);
+                    Toast.makeText(DestinationDetailActivity.this, "Bookmark added!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle error
+                Toast.makeText(DestinationDetailActivity.this, "Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void fetchLocationDetails(double latitude, double longitude) {
         // Updated URL with accept-language parameter for English results

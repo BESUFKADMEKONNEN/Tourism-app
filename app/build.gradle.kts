@@ -34,49 +34,98 @@ android {
         viewBinding = true
     }
 }
+//
+//dependencies {
+//
+//    implementation(libs.appcompat)
+//    implementation(libs.material)
+//    implementation(libs.constraintlayout)
+//    implementation(libs.lifecycle.livedata.ktx)
+//    implementation(libs.lifecycle.viewmodel.ktx)
+//    implementation(libs.navigation.fragment)
+//    implementation(libs.navigation.ui)
+//    implementation(libs.activity)
+//    implementation(libs.firebase.database)
+//    testImplementation(libs.junit)
+//    androidTestImplementation(libs.ext.junit)
+//    androidTestImplementation(libs.espresso.core)
+//
+//    //fetch from api
+//    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+//    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+//    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+//    implementation("androidx.appcompat:appcompat:1.6.0")
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+//
+//    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+//    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+//
+//    implementation ("com.github.bumptech.glide:glide:4.15.1")
+//    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+//
+//
+//        implementation ("org.mongodb:mongodb-driver-sync:4.4.0")
+//
+//    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+//    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+//    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+//
+//
+//
+//    implementation ("androidx.recyclerview:recyclerview:1.3.2")
+//    implementation ("com.squareup.picasso:picasso:2.71828")
+//    implementation(libs.volley)
+//    implementation ("com.google.android.material:material:1.9.0")
+//    implementation ("com.google.android.material:material:1.6.0")
+//    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+//
+//}
 
 dependencies {
 
+    // AppCompat, Material Design, ConstraintLayout
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
+
+    // Lifecycle
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
+
+    // Navigation
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+
+    // Activity
     implementation(libs.activity)
+
+    // Firebase
     implementation(libs.firebase.database)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    //fetch from api
+    // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
-    implementation("androidx.appcompat:appcompat:1.6.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
 
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    // Image Loading
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("com.squareup.picasso:picasso:2.71828")
 
-    implementation ("com.github.bumptech.glide:glide:4.15.1")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+    // MongoDB Driver
+    implementation("org.mongodb:mongodb-driver-sync:4.4.0")
 
+    // RecyclerView
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-        implementation ("org.mongodb:mongodb-driver-sync:4.4.0")
-
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
-
-
-
-    implementation ("androidx.recyclerview:recyclerview:1.3.2")
-    implementation ("com.squareup.picasso:picasso:2.71828")
+    // Volley
     implementation(libs.volley)
-    implementation ("com.google.android.material:material:1.9.0")
-    implementation ("com.google.android.material:material:1.6.0")
-    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
+    // CoordinatorLayout
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 }
