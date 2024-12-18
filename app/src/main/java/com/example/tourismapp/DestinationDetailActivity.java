@@ -5,19 +5,25 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +39,7 @@ public class DestinationDetailActivity extends AppCompatActivity {
     private TextView destinationDetails;
     private TextView countryTextView, stateTextView, cityTextView, priceTextView;
     private Button clickMeButton, mapButton, bookButton;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +97,41 @@ public class DestinationDetailActivity extends AppCompatActivity {
         bookButton.setOnClickListener(v -> {
             addBookmark(pageId,name,details,imageUrl,wikiUrl);
             Toast.makeText(this, "Booking feature coming soon!", Toast.LENGTH_SHORT).show();
+        });
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // Initialize NavigationView
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.nav_home) {
+                    startActivity(new Intent(DestinationDetailActivity.this, MainActivity.class));
+                } else if (id == R.id.nav_booked_places) {
+                    startActivity(new Intent(DestinationDetailActivity.this, BookedPlacesActivity.class));
+
+                } else if (id == R.id.nav_about) {
+                    Toast.makeText(DestinationDetailActivity.this, "You are already in About", Toast.LENGTH_SHORT).show();
+                } else if (id == R.id.nav_help) {
+                    Toast.makeText(DestinationDetailActivity.this, "Help is on development", Toast.LENGTH_SHORT).show();
+                } else if (id == R.id.nav_logout) {
+                    startActivity(new Intent(DestinationDetailActivity.this, LoginActivity.class));
+                } else if (id == R.id.nav_exit_app) {
+                    Toast.makeText(DestinationDetailActivity.this, "Thank you for being with us.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                drawerLayout.closeDrawers();
+                return true;
+            }
         });
     }
 
