@@ -31,7 +31,7 @@ public class BookedPlacesActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView noBookedPlacesTextView;
     private DrawerLayout drawerLayout;
-    private DestinationAdapter adapter;
+    private BookedPlacesAdapter adapter;
     private List<Destination> bookedPlaces;
 
     @Override
@@ -111,7 +111,7 @@ public class BookedPlacesActivity extends AppCompatActivity {
                     noBookedPlacesTextView.setVisibility(View.GONE);
 
                     // Set up RecyclerView with updated data
-                    adapter = new DestinationAdapter(bookedPlaces, destination -> {
+                    adapter = new BookedPlacesAdapter(bookedPlaces, destination -> {
                         Intent intent = new Intent(BookedPlacesActivity.this, DestinationDetailActivity.class);
                         intent.putExtra("name", destination.getName());
                         intent.putExtra("details", destination.getDetails());

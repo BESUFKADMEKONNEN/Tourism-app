@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +18,8 @@ public class BookedPlacesAdapter extends RecyclerView.Adapter<BookedPlacesAdapte
 
     private final List<Destination> bookedPlaces;  // Assuming BookedPlace is the data type for booked places
     private final DestinationClickListener listener;
+
+
 
     // Interface to handle item clicks
     public interface DestinationClickListener {
@@ -45,8 +48,32 @@ public class BookedPlacesAdapter extends RecyclerView.Adapter<BookedPlacesAdapte
         Glide.with(holder.itemView.getContext())
                 .load(bookedPlace.getImageUrl())  // Assuming BookedPlace has a getImageUrl() method
                 .into(holder.imageView);
+
+        holder.deleteIcon.setOnClickListener(v -> {
+            // Show confirmation dialog
+            new AlertDialog.Builder(holder.itemView.getContext())
+                    .setTitle("Delete Confirmation")
+                    .setMessage("Are you sure you want to delete this item?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Perform delete operation
+                        bookedPlaces.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, bookedPlaces.size());
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        // Dismiss the dialog
+                        dialog.dismiss();
+                    })
+                    .create()
+                    .show();
+        });
+
         holder.itemView.setOnClickListener(v -> listener.onDestinationClick(bookedPlace));
+
     }
+
+
+
 
     @Override
     public int getItemCount() {
@@ -58,12 +85,15 @@ public class BookedPlacesAdapter extends RecyclerView.Adapter<BookedPlacesAdapte
         public TextView name;
         public TextView details;
         public ImageView imageView;
+        public ImageView deleteIcon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.destinationName);  // Same ID as item_destination layout
-            details = itemView.findViewById(R.id.destinationDetails); // Same ID as item_destination layout
-            imageView = itemView.findViewById(R.id.destinationImage); // Same ID as item_destination layout
+            name = itemView.findViewById(R.id.destinationName);
+            details = itemView.findViewById(R.id.destinationDetails);
+            imageView = itemView.findViewById(R.id.destinationImage);
+            deleteIcon = itemView.findViewById(R.id.deleteIcon); // Add deleteIcon
+
         }
     }
 }
