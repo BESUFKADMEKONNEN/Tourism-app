@@ -120,7 +120,7 @@ public class BookedPlacesActivity extends AppCompatActivity {
                         intent.putExtra("wikiUrl", "https://en.wikipedia.org/wiki/" + destination.getName());
                         startActivity(intent);
 
-//                        Toast.makeText(BookedPlacesActivity.this, "Clicked on " + destination.getName(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(BookedPlacesActivity.this, "Clicked on " + destination.getName(), Toast.LENGTH_SHORT).show();
                     });
 
                     recyclerView.setLayoutManager(new LinearLayoutManager(BookedPlacesActivity.this));

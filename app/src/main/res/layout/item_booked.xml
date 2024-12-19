@@ -35,4 +35,12 @@
             android:textColor="#777777"
             android:paddingTop="4dp" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/deleteIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_delete"
+        android:paddingTop="8dp" />
 </LinearLayout>
