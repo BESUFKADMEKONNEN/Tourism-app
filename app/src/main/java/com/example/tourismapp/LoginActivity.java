@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (user != null && user.password.equals(password)) {
                             // Login successful
-                            authUser = new AuthUser(user.firstName,user.lastName,user.gender,user.username,user.password, snapshot.getKey()); // Store authenticated user info
+                            authUser = new AuthUser(user.firstName,user.lastName,user.gender,user.username,user.password, snapshot.getKey(),user.profileImageUrl); // Store authenticated user info
                             Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
                             // Proceed to next activity (e.g., MainActivity)

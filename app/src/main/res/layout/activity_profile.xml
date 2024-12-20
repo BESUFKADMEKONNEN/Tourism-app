@@ -38,8 +38,8 @@
             <!-- Profile Image -->
             <ImageView
                 android:id="@+id/profileImageView"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_person"
                 android:layout_marginBottom="16dp"/>
@@ -101,12 +101,14 @@
 
             <!-- Gender Spinner -->
             <Spinner
-                android:id="@+id/genderSpinner"
+                android:id="@+id/genderSpinnerUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:minHeight="48dp"
                 android:enabled="false"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 />
 
             <!-- Username -->

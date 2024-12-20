@@ -101,6 +101,11 @@ dependencies {
 
     // Firebase
     implementation(libs.firebase.database)
+    implementation ("com.google.firebase:firebase-storage:21.0.1")
+    implementation (libs.google.firebase.database.v2003)
+    implementation ("com.google.firebase:firebase-auth:21.0.0")
+    implementation ("com.google.firebase:firebase-appcheck:18.0.0")
+
 
     // Testing
     testImplementation(libs.junit)
@@ -117,8 +122,6 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
     implementation("com.squareup.picasso:picasso:2.71828")
 
-    // MongoDB Driver
-    implementation("org.mongodb:mongodb-driver-sync:4.4.0")
 
     // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")

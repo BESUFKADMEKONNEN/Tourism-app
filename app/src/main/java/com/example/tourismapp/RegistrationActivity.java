@@ -2,7 +2,9 @@ package com.example.tourismapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -14,11 +16,19 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tourismapp.LoginActivity;
+import com.example.tourismapp.R;
+import com.example.tourismapp.User;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.util.Objects;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -30,6 +40,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private ImageView profileImageView;
     private String firstName, lastName, gender, username, password, confirmPassword;
     private boolean isImageUploaded = false;
+    private Uri imageUri; // Store the image URI
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +60,17 @@ public class RegistrationActivity extends AppCompatActivity {
         uploadImageButton = findViewById(R.id.uploadImageButton);
         profileImageView = findViewById(R.id.profileImageView);
 
-
-        Spinner genderSpinner = findViewById(R.id.genderSpinner);
+        // Set up gender spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.gender_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genderSpinner.setAdapter(adapter);
-
 
         // Register Button click listener
         registerButton.setOnClickListener(v -> registerUser());
 
         // Upload Image Button click listener
         uploadImageButton.setOnClickListener(v -> openImageSelector());
-
-
     }
 
     private void registerUser() {
@@ -90,35 +97,57 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
         // Handle image upload if needed
-        // if (!isImageUploaded) {
-        //     Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
-        //     return;
-        // }
-Log.i("first 1","starting");
-        // Get a reference to the Firebase Database
+        if (!isImageUploaded) {
+            Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Get reference to Firebase Realtime Database
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
-        // Create a unique user ID (You can use Firebase Authentication for real login system)
-        String userId = database.push().getKey();
+        // Convert image to Base64 string
+        String encodedImage = encodeImageToBase64(imageUri);
 
-        // Create the user object
-        User newUser = new User(firstName, lastName, gender, username, password, ""); // Add profile image URL if applicable
+        if (encodedImage != null) {
+            // Create a unique user ID
+            String userId = database.push().getKey();
 
-        Log.i("first 1","starting "+userId);
-        // Save the user data under the user ID
-        if (userId != null) {
+            // Create user object with encoded image
+            User newUser = new User(firstName, lastName, gender, username, password, encodedImage);
 
-            database.child("users").child(userId).setValue(newUser)
-                    .addOnCompleteListener(task -> {
-                        Log.i("first 1","starting"+task);
-                        if (task.isSuccessful()) {
-                            Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                            // Proceed to next activity (e.g., MainActivity)
-                            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                        } else {
-                            Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            // Save the user data in Firebase
+            if (userId != null) {
+                database.child("users").child(userId).setValue(newUser)
+                        .addOnCompleteListener(dbTask -> {
+                            if (dbTask.isSuccessful()) {
+                                Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                            } else {
+                                Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        } else {
+            Toast.makeText(this, "Image encoding failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private String encodeImageToBase64(Uri imageUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -134,7 +163,8 @@ Log.i("first 1","starting");
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            profileImageView.setImageURI(data.getData());
+            imageUri = data.getData();
+            profileImageView.setImageURI(imageUri);
             isImageUploaded = true;
         }
     }

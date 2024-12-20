@@ -1,8 +1,15 @@
 package com.example.tourismapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
+    private ImageView profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +64,12 @@ public class MainActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.searchButton);
         recyclerView = findViewById(R.id.recyclerView);
 
+
         // Set up the RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new DestinationAdapter(destinationList, this::onDestinationClick);
         recyclerView.setAdapter(adapter);
+
 
         // Set up the search button click listener
         searchButton.setOnClickListener(v -> searchDestinations());
@@ -70,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
         // Setup the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+
 
         // Set up the navigation drawer toggle
         toggle = new ActionBarDrawerToggle(
@@ -90,10 +103,22 @@ public class MainActivity extends AppCompatActivity {
 
         // Get header view to access header elements
         View headerView = navigationView.getHeaderView(0);
-        ImageView profileImage = headerView.findViewById(R.id.profile_image);
+      profileImage = headerView.findViewById(R.id.profile_image);
+
         TextView userEmail = headerView.findViewById(R.id.user_email);
 
         // Simulating authenticated user data
+        String haveProfileImage = AuthUser.profileImage;  // Get the base64 image string
+
+        if (haveProfileImage != null && !haveProfileImage.isEmpty()) {
+            profileImage.setImageBitmap(decodeBase64Image());
+        } else {
+            if(AuthUser.gender.equals("Male")){
+                profileImage.setImageResource(R.drawable.ic_male);  // Replace with your default image
+            }else if(AuthUser.gender.equals("Female")){
+                profileImage.setImageResource(R.drawable.ic_female);  // Replace with your default image
+            }
+            }
 
 
         String authenticatedEmail = AuthUser.username ; // Replace with actual user data
@@ -153,6 +178,50 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    private Bitmap decodeBase64Image(){
+
+        String base64Image = AuthUser.profileImage;
+        if (base64Image != null && !base64Image.isEmpty()) {
+            try {
+                // Decode the base64 string into bytes
+                byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
+
+                // Convert bytes into a Bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                Bitmap circularBitmap = getCircularBitmap(bitmap);
+              return circularBitmap;
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Invalid image format", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "No profile image found", Toast.LENGTH_SHORT).show();
+        }
+
+return null;
+    }
+
+    private Bitmap getCircularBitmap(Bitmap bitmap) {
+        // Creating a new Bitmap with the width and height of the smallest dimension (for the circle)
+        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        // Creating a Canvas to draw a circular shape on the new Bitmap
+        Canvas canvas = new Canvas(output);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+
+        // Draw a circle
+        canvas.drawCircle(size / 2, size / 2, size / 2, paint);
+
+        // Set the Bitmap as the source for the canvas
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, (size - bitmap.getWidth()) / 2, (size - bitmap.getHeight()) / 2, paint);
+
+        return output;
+    }
 
     @Override
     public void onBackPressed() {

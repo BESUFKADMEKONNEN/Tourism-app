@@ -1,7 +1,18 @@
 package com.example.tourismapp;
 
+
+
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,9 +37,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity {
+    private static final int IMAGE_REQUEST_CODE = 101;
     private String USER_ID;
     private DrawerLayout drawerLayout;
     private EditText firstNameEditText, lastNameEditText, usernameEditText;
@@ -37,6 +53,8 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView usernameView;
     private TextInputLayout confirmPasswordEditLayout;
     private TextInputEditText passwordEditText,confirmPasswordEditText;
+    private Uri imageUri;
+    private boolean isImageUploaded = false;
     AuthUser authUser;
 
 
@@ -50,7 +68,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
         lastNameEditText = findViewById(R.id.lastNameEditText);
-        genderSpinner = findViewById(R.id.genderSpinner);
+        genderSpinner = findViewById(R.id.genderSpinnerUpdate);
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
@@ -85,6 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
          usernameView.setHint("You Can't Change The Username!");
         passwordEditText.setText(AuthUser.password);
         confirmPasswordEditText.setText(AuthUser.password);
+        profileImageView.setImageBitmap(decodeBase64Image());
 
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +116,7 @@ public class ProfileActivity extends AppCompatActivity {
                 confirmPasswordEditLayout.setVisibility(View.VISIBLE);
             }
         });
-
+        uploadImageButton.setOnClickListener(v->openImageSelector());
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,9 +129,6 @@ public class ProfileActivity extends AppCompatActivity {
             confirmPasswordEditLayout.setVisibility(View.GONE);
             }
         });
-
-
-
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +160,10 @@ public class ProfileActivity extends AppCompatActivity {
                 }
 
                 // Assuming you have a method to update user details in the AuthUser class or backend
+                String encodedImage = encodeImageToBase64(imageUri);
+
+
+
                 boolean updateSuccessful =AuthUser.updateUserDetails(USER_ID, firstName, lastName, gender,username, password);
 
                 if (updateSuccessful) {
@@ -205,10 +225,93 @@ public class ProfileActivity extends AppCompatActivity {
         firstNameEditText.setEnabled(value);
         lastNameEditText.setEnabled(value);
         genderSpinner.setEnabled(value);
+        genderSpinner.setFocusable(value);
+        genderSpinner.setFocusableInTouchMode(value);
         passwordEditText.setEnabled(value);
         confirmPasswordEditText.setEnabled(value);
         uploadImageButton.setEnabled(value);
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            imageUri = data.getData();
+            profileImageView.setImageURI(imageUri);
+            isImageUploaded = true;
+        }
+    }
+
+    private void openImageSelector() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, IMAGE_REQUEST_CODE);
+    }
+
+
+    private String encodeImageToBase64(Uri imageUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Bitmap decodeBase64Image(){
+
+        String base64Image = AuthUser.profileImage;
+        if (base64Image != null && !base64Image.isEmpty()) {
+            try {
+                // Decode the base64 string into bytes
+                byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
+
+                // Convert bytes into a Bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                Bitmap circularBitmap = getCircularBitmap(bitmap);
+                return circularBitmap;
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Invalid image format", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "No profile image found", Toast.LENGTH_SHORT).show();
+        }
+
+        return null;
+    }
+
+    private Bitmap getCircularBitmap(Bitmap bitmap) {
+        // Creating a new Bitmap with the width and height of the smallest dimension (for the circle)
+        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        // Creating a Canvas to draw a circular shape on the new Bitmap
+        Canvas canvas = new Canvas(output);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+
+        // Draw a circle
+        canvas.drawCircle(size / 2, size / 2, size / 2, paint);
+
+        // Set the Bitmap as the source for the canvas
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, (size - bitmap.getWidth()) / 2, (size - bitmap.getHeight()) / 2, paint);
+
+        return output;
+    }
+
 
 
 
