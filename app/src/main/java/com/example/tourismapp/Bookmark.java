@@ -1,6 +1,7 @@
 package com.example.tourismapp;
 
 public class Bookmark {
+    public String userId;
     public String pageId;
     public String name;
     public String details;
@@ -13,7 +14,8 @@ public class Bookmark {
     }
 
     // Constructor
-    public Bookmark(String pageId, String name, String details, String imageUrl, String wikiUrl) {
+    public Bookmark(String pageId, String name, String details, String imageUrl, String wikiUrl,String userId) {
+        this.userId = userId;
         this.pageId = pageId;
         this.name = name;
         this.details = details;

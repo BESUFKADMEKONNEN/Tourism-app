@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.Request;
+import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
@@ -38,6 +39,7 @@ public class MainActivity extends NavParent {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         // Initialize the views
         searchInput = findViewById(R.id.searchInput);
         searchButton = findViewById(R.id.searchButton);
@@ -59,26 +61,34 @@ public class MainActivity extends NavParent {
         if (!query.isEmpty()) {
             String url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + query + "&format=json";
 
+            // Make the API call for search results
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                    response -> {
-                        try {
-                            JSONArray searchResults = response.getJSONObject("query").getJSONArray("search");
-                            destinationList.clear();
-                            if (searchResults.length() > 0) {
-                                for (int i = 0; i < searchResults.length(); i++) {
-                                    JSONObject result = searchResults.getJSONObject(i);
-                                    String title = result.getString("title");
-                                    fetchImage(title);
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONArray searchResults = response.getJSONObject("query").getJSONArray("search");
+                                destinationList.clear();  // Clear current list for fresh search results
+                                if (searchResults.length() > 0) {
+                                    for (int i = 0; i < searchResults.length(); i++) {
+                                        JSONObject result = searchResults.getJSONObject(i);
+                                        String title = result.getString("title");
+                                        fetchImage(title); // Fetch image URL based on title
+                                    }
+                                } else {
+                                    Toast.makeText(MainActivity.this, "No results found", Toast.LENGTH_SHORT).show();
                                 }
-                            } else {
-                                Toast.makeText(MainActivity.this, "No results found", Toast.LENGTH_SHORT).show();
+                                adapter.notifyDataSetChanged();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            adapter.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    },
-                    error -> Log.e("API Error", error.toString())
+                    }, error -> {
+                if (error.networkResponse != null) {
+                    Log.e("API Error", "Error code: " + error.networkResponse.statusCode);
+                }
+                Log.e("API Error", error.toString());
+            }
             );
 
             Volley.newRequestQueue(this).add(jsonObjectRequest);
@@ -91,28 +101,29 @@ public class MainActivity extends NavParent {
         String url = "https://en.wikipedia.org/w/api.php?action=query&titles=" + title + "&prop=pageimages|info&format=json&piprop=original";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONObject pages = response.getJSONObject("query").getJSONObject("pages");
-                        JSONArray pageIds = pages.names();
-                        if (pageIds != null) {
-                            for (int i = 0; i < pageIds.length(); i++) {
-                                String pageId = pageIds.getString(i);
-                                JSONObject page = pages.getJSONObject(pageId);
-                                String imageUrl = page.optJSONObject("thumbnail") != null ?
-                                        page.getJSONObject("thumbnail").getString("source") : null;
-                                if (!imageUrl.isEmpty()) {
-                                    // Add destination with image URL and pageId to the list
-                                    destinationList.add(new Destination(title, "Details for " + title, imageUrl, pageId));
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject pages = response.getJSONObject("query").getJSONObject("pages");
+                            JSONArray pageIds = pages.names();
+                            if (pageIds != null) {
+                                for (int i = 0; i < pageIds.length(); i++) {
+                                    String pageId = pageIds.getString(i); // Extract pageId
+                                    JSONObject page = pages.getJSONObject(pageId);
+                                    String imageUrl = page.has("original") ? page.getJSONObject("original").getString("source") : "";
+                                    if (!imageUrl.isEmpty()) {
+                                        // Add destination with image URL and pageId to the list
+                                        destinationList.add(new Destination(title, "Details for " + title, imageUrl, pageId));
+                                    }
                                 }
-                                adapter.notifyDataSetChanged();
                             }
+                            adapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-                },
-                error -> Log.e("API Error", error.toString())
+                }, error -> Log.e("API Error", error.toString())
         );
 
         Volley.newRequestQueue(this).add(jsonObjectRequest);
@@ -120,7 +131,41 @@ public class MainActivity extends NavParent {
 
     private void onDestinationClick(Destination destination) {
         Intent intent = new Intent(MainActivity.this, DestinationDetailActivity.class);
-        intent.putExtra("destination", destination);
+        intent.putExtra("name", destination.getName());
+        intent.putExtra("details", destination.getDetails());
+        intent.putExtra("image", destination.getImageUrl());
+        intent.putExtra("pageId", destination.getPageId());
+        intent.putExtra("wikiUrl", "https://en.wikipedia.org/wiki/" + destination.getName());
         startActivity(intent);
     }
+
+    private void fetchDestinations(int page) {
+        String query = searchInput.getText().toString();  // Get the current search query
+        if (!query.isEmpty()) {
+            String url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + query
+                    + "&format=json&srprop=snippet&sroffset=" + (page - 1) * 10;  // Pagination offset
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONArray searchResults = response.getJSONObject("query").getJSONArray("search");
+                                for (int i = 0; i < searchResults.length(); i++) {
+                                    JSONObject result = searchResults.getJSONObject(i);
+                                    String title = result.getString("title");
+                                    fetchImage(title);  // Fetch image URL based on title
+                                }
+                                adapter.notifyDataSetChanged();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, error -> Log.e("API Error", error.toString())
+            );
+
+            Volley.newRequestQueue(this).add(jsonObjectRequest);
+        }
+    }
+
 }

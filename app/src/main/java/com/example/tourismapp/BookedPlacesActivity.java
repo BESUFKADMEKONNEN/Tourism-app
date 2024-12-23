@@ -22,6 +22,8 @@ public class BookedPlacesActivity extends NavParent {
     private TextView noBookedPlacesTextView;
     private BookedPlacesAdapter adapter;
     private List<Destination> bookedPlaces;
+    private String currentUserId;
+
 
     @Override
     protected int getContentLayoutId() {
@@ -30,8 +32,10 @@ public class BookedPlacesActivity extends NavParent {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        currentUserId=AuthUser.userId;
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_booked_places);
+
 
         recyclerView = findViewById(R.id.recyclerViewBooked);
         noBookedPlacesTextView = findViewById(R.id.noBookedPlacesTextView);
@@ -41,7 +45,7 @@ public class BookedPlacesActivity extends NavParent {
 
         // Fetch booked places data from Firebase
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("bookmarks");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.orderByChild("userId").equalTo(currentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 bookedPlaces.clear(); // Clear previous data
@@ -63,7 +67,7 @@ public class BookedPlacesActivity extends NavParent {
 
                     // Set up RecyclerView with updated data
                     adapter = new BookedPlacesAdapter(BookedPlacesActivity.this, bookedPlaces, destination -> {
-                        Intent intent = new Intent(BookedPlacesActivity.this, DestinationDetailActivity.class);
+                        Intent intent = new Intent(BookedPlacesActivity.this, BookedDetailActivity.class);
                         intent.putExtra("name", destination.getName());
                         intent.putExtra("details", destination.getDetails());
                         intent.putExtra("image", destination.getImageUrl());

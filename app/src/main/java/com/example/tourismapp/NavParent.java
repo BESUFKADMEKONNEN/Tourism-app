@@ -53,17 +53,17 @@ public abstract class NavParent extends AppCompatActivity {
         TextView userEmail = headerView.findViewById(R.id.user_email);
 
         // Simulating authenticated user data
-        String haveProfileImage = AuthUser.profileImage;  // Get the base64 image string
+        String haveProfileImage = AuthUser.profileImageUrl;  // Get the base64 image string
         if (haveProfileImage != null && !haveProfileImage.isEmpty()) {
             profileImage.setImageBitmap(decodeBase64Image());
         } else {
-            if (AuthUser.gender.equals("Male")) {
+            if (AuthUser.gender!=null&&AuthUser.gender.equals("Male")) {
                 profileImage.setImageResource(R.drawable.ic_male);  // Replace with your default image
             } else if (AuthUser.gender.equals("Female")) {
                 profileImage.setImageResource(R.drawable.ic_female);  // Replace with your default image
             }
         }
-        String authenticatedEmail = AuthUser.username;
+        String authenticatedEmail = AuthUser.firstName;
         userEmail.setText(authenticatedEmail);
 
         // Set a click listener for the profile image
@@ -108,7 +108,7 @@ public abstract class NavParent extends AppCompatActivity {
     }
 
     private Bitmap decodeBase64Image() {
-        String base64Image = AuthUser.profileImage;
+        String base64Image = AuthUser.profileImageUrl;
         if (base64Image != null && !base64Image.isEmpty()) {
             try {
                 byte[] decodedBytes = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT);

@@ -34,18 +34,18 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DestinationDetailActivity extends NavParent {
+public class BookedDetailActivity extends NavParent {
 
     private TextView destinationDetails;
     private TextView countryTextView, stateTextView, cityTextView, priceTextView;
-    private Button clickMeButton, mapButton, bookButton;
+    private Button clickMeButton, mapButton;
 
 
     @Override
     protected int getContentLayoutId() {
-        return R.layout.activity_destination_detail;
+        return R.layout.activity_booked_detail;
     }
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,11 +72,10 @@ public class DestinationDetailActivity extends NavParent {
 
         clickMeButton = findViewById(R.id.clickMeButton);
         mapButton = findViewById(R.id.openMapButton);
-        bookButton = findViewById(R.id.bookButton);
 
 
 
-        FirebaseApp.initializeApp(DestinationDetailActivity.this);
+        FirebaseApp.initializeApp(BookedDetailActivity.this);
 
         destinationName.setText(name);
         destinationDetails.setText(Html.fromHtml(details));
@@ -99,13 +98,11 @@ public class DestinationDetailActivity extends NavParent {
             startActivity(mapIntent);
         });
 
-        bookButton.setOnClickListener(v -> {
-            addBookmark(pageId,name,details,imageUrl,wikiUrl,userId);
-           });
 
 
 
-       }
+
+    }
 
     private void fetchDestinationDetails(String pageId) {
         String url = "https://en.wikipedia.org/w/api.php?action=query&pageids=" + pageId + "&prop=extracts|coordinates&exintro=true&explaintext=true&format=json";
@@ -141,46 +138,18 @@ public class DestinationDetailActivity extends NavParent {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(DestinationDetailActivity.this, "Failed to load details.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(BookedDetailActivity.this, "Failed to load details.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, error -> {
             Log.e("API Error", error.toString());
-            Toast.makeText(DestinationDetailActivity.this, "Error fetching details.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(BookedDetailActivity.this, "Error fetching details.", Toast.LENGTH_SHORT).show();
         });
 
         // Add the request to the Volley request queue
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
 
-    public void addBookmark(String pageId,String name,String details,String imageUrl,String wikiUrl,String userId) {
-
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("bookmarks");
-
-        // Query Firebase for existing bookmarks with the same title (or URL)
-        databaseReference.orderByChild("pageId").equalTo(pageId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // If the dataSnapshot is not empty, the bookmark already exists
-                if (dataSnapshot.exists()) {
-                    // Handle case where bookmark already exists
-                    Toast.makeText(DestinationDetailActivity.this, "Bookmark already exists!", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Add the bookmark if it doesn't exist
-                    Bookmark bookmark = new Bookmark(pageId,name,details,imageUrl,wikiUrl,userId); // Add profile image URL if applicable
-                    databaseReference.push().setValue(bookmark);
-                    Toast.makeText(DestinationDetailActivity.this, "Bookmark added!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle error
-                Toast.makeText(DestinationDetailActivity.this, "Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     private void fetchLocationDetails(double latitude, double longitude) {
         // Updated URL with accept-language parameter for English results
@@ -228,19 +197,19 @@ public class DestinationDetailActivity extends NavParent {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(DestinationDetailActivity.this, "Error fetching location details.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(BookedDetailActivity.this, "Error fetching location details.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, error -> {
             Log.e("API Error", error.toString());
-            Toast.makeText(DestinationDetailActivity.this, "Error fetching location details.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(BookedDetailActivity.this, "Error fetching location details.", Toast.LENGTH_SHORT).show();
         });
 
         // Add the request to the Volley request queue
         Volley.newRequestQueue(this).add(jsonObjectRequest);
     }
 
-     private double calculatePrice(double latitude, double longitude, String country, String state) {
+    private double calculatePrice(double latitude, double longitude, String country, String state) {
         // Convert latitude and longitude to strings and concatenate them with country and state
         String locationString = latitude + "" + longitude + (country != null ? country : "") + (state != null ? state : "");
 

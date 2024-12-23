@@ -42,10 +42,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends NavParent {
     private static final int IMAGE_REQUEST_CODE = 100;
     private String USER_ID;
-    private DrawerLayout drawerLayout;
+//    private DrawerLayout drawerLayout;
     private EditText firstNameEditText, lastNameEditText, usernameEditText;
     private Spinner genderSpinner;
     private Button updateButton, uploadImageButton,cancelButton,confirmButton;
@@ -56,15 +56,18 @@ public class ProfileActivity extends AppCompatActivity {
     private Uri imageUri;
     private boolean isImageUploaded = false;
     AuthUser authUser;
-    private ImageView profileImage;
     private  TextView userEmail;
 
+    @Override
+    protected int getContentLayoutId() {
+        return R.layout.activity_profile;
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+//        setContentView(R.layout.activity_profile);
          authUser=new AuthUser();
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
@@ -81,25 +84,15 @@ public class ProfileActivity extends AppCompatActivity {
         usernameView=findViewById(R.id.usernameView);
         confirmPasswordEditLayout=findViewById(R.id.confirmPasswordInputLayout);
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
 
-        // Get header view to access header elements
-        View headerView = navigationView.getHeaderView(0);
-        profileImage = headerView.findViewById(R.id.profile_image);
-        userEmail = headerView.findViewById(R.id.user_email);
-        userEmail.setText(AuthUser.username);
-
-        if (AuthUser.profileImage != null && !AuthUser.profileImage.trim().isEmpty()) {
+        if (AuthUser.profileImageUrl != null && !AuthUser.profileImageUrl.trim().isEmpty()) {
             profileImageView.setImageBitmap(decodeBase64Image());
-            profileImage.setImageBitmap(decodeBase64Image());
 
         } else {
             if (AuthUser.gender.equals("Male")) {
                 profileImageView.setImageResource(R.drawable.ic_male);  // Replace with your default image
-                profileImage.setImageResource(R.drawable.ic_male);  // Replace with your default image
             } else if (AuthUser.gender.equals("Female")) {
                 profileImageView.setImageResource(R.drawable.ic_female);  // Replace with your default image
-                profileImage.setImageResource(R.drawable.ic_female);  // Replace with your default image
             }
         }
 
@@ -144,8 +137,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-
-        uploadImageButton.setOnClickListener(v->openImageSelector());
+        uploadImageButton.setOnClickListener(v -> openImageSelector());
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,84 +182,43 @@ public class ProfileActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Assuming you have a method to update user details in the AuthUser class or backend
-                String encodedImage=null;
+                String encodedImage = null;
                 if (imageUri != null) {
                     encodedImage = encodeImageToBase64(imageUri);
-            }
 
-
-                boolean updateSuccessful =AuthUser.updateUserDetails(USER_ID, firstName, lastName, gender,username, password,encodedImage);
-
-                if (updateSuccessful) {
-                    Toast.makeText(ProfileActivity.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
-                    changeComponents(false);
-                    confirmButton.setVisibility(View.INVISIBLE);
-                    cancelButton.setVisibility(View.INVISIBLE);
-                    updateButton.setVisibility((View.VISIBLE));
-                    confirmPasswordEditText.setVisibility(View.INVISIBLE);
-                    confirmPasswordEditLayout.setVisibility(View.GONE);
-                    uploadImageButton.setVisibility(View.GONE);
-
-//                    NavigationView navigationView = findViewById(R.id.nav_view);
-//
-//                    // Get header view to access header elements
-//                    View headerView = navigationView.getHeaderView(0);
-//                    profileImage = headerView.findViewById(R.id.profile_image);
-//
-//                    if (AuthUser.profileImage != null && !AuthUser.profileImage.trim().isEmpty()) {
-//                        profileImageView.setImageBitmap(decodeBase64Image());
-//                        profileImage.setImageBitmap(decodeBase64Image());
-//                    } else {
-//                        if (AuthUser.gender.equals("Male")) {
-//                            profileImageView.setImageResource(R.drawable.ic_male);  // Replace with your default image
-//                            profileImage.setImageResource(R.drawable.ic_male);  // Replace with your default image
-//                        } else if (AuthUser.gender.equals("Female")) {
-//                            profileImageView.setImageResource(R.drawable.ic_female);  // Replace with your default image
-//                            profileImage.setImageResource(R.drawable.ic_female);  // Replace with your default image
-//                        }
-//                    }
-                        refreshPage();
-                } else {
-                    Toast.makeText(ProfileActivity.this, "Failed to update profile. Please try again.", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // Initialize DrawerLayout and ActionBarDrawerToggle
-        drawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.nav_home) {
-                    startActivity(new Intent(ProfileActivity.this, MainActivity.class));
-                } else if (id == R.id.nav_booked_places) {
-                    startActivity(new Intent(ProfileActivity.this, BookedPlacesActivity.class));
-
-                } else if (id == R.id.nav_about) {
-                    Toast.makeText(ProfileActivity.this, "You are already in About", Toast.LENGTH_SHORT).show();
-                } else if (id == R.id.nav_help) {
-                    Toast.makeText(ProfileActivity.this, "Help is on development", Toast.LENGTH_SHORT).show();
-                } else if (id == R.id.nav_logout) {
-                    startActivity(new Intent(ProfileActivity.this, LoginActivity.class));
-                } else if (id == R.id.nav_exit_app) {
-                    Toast.makeText(ProfileActivity.this, "Thank you for being with us.", Toast.LENGTH_SHORT).show();
-                    finish();
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                String userId = AuthUser.userId;
+                if (userId != null) {
+                    User updateuser = new User(firstName, lastName, gender, username, password, encodedImage);
+                    AuthUser authUser = new AuthUser(firstName,lastName,gender,username,password,userId,encodedImage);
+                    User newUser = new User(firstName, lastName, gender, username, password, encodedImage);
+                    database.child("users").child(userId).setValue(newUser)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(ProfileActivity.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
+                                    changeComponents(false);
+                                    confirmButton.setVisibility(View.INVISIBLE);
+                                    cancelButton.setVisibility(View.INVISIBLE);
+                                    updateButton.setVisibility((View.VISIBLE));
+                                    confirmPasswordEditText.setVisibility(View.INVISIBLE);
+                                    confirmPasswordEditLayout.setVisibility(View.GONE);
+                                    uploadImageButton.setVisibility(View.GONE);
+                                    refreshPage();
+                                    startActivity(new Intent(ProfileActivity.this,MainActivity.class));
+                                } else {
+                                    Toast.makeText(ProfileActivity.this, "Update failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
-                drawerLayout.closeDrawers();
-                return true;
+
             }
-        });
-    }
+
+
+        });}
+
+
 
     private void refreshPage() {
         finish();
@@ -291,18 +242,64 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (requestCode == IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             imageUri = data.getData();
-            profileImageView.setImageURI(imageUri); // Display the selected image
-            isImageUploaded = true;
-        } else {
-            Toast.makeText(this, "Image selection failed. Please try again.", Toast.LENGTH_SHORT).show();
+            if (imageUri != null) {
+                try {
+                    // Load the image into a Bitmap
+                    InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                    Bitmap selectedImage = BitmapFactory.decodeStream(inputStream);
+
+                    // Display the image in the ImageView
+                    profileImageView.setImageBitmap(selectedImage);
+
+                    // Optionally encode to Base64
+                    String encodedImage = encodeImageToBase64(imageUri);
+                    isImageUploaded = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
+
 
     private void openImageSelector() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, IMAGE_REQUEST_CODE);
     }
+
+    private Bitmap decodeBase64Image() {
+                String base64Image = AuthUser.profileImageUrl;
+                if (base64Image != null && !base64Image.isEmpty()) {
+                    try {
+                        byte[] decodedBytes = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                        return getCircularBitmap(bitmap);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                        Toast.makeText(ProfileActivity.this, "Invalid image format", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(ProfileActivity.this, "No profile image found", Toast.LENGTH_SHORT).show();
+                }
+                return null;
+            }
+
+
+    private Bitmap getCircularBitmap(Bitmap bitmap) {
+                int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+                Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(output);
+                Paint paint = new Paint();
+                paint.setAntiAlias(true);
+                paint.setFilterBitmap(true);
+                paint.setDither(true);
+                canvas.drawCircle(size / 2, size / 2, size / 2, paint);
+                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+                canvas.drawBitmap(bitmap, (size - bitmap.getWidth()) / 2, (size - bitmap.getHeight()) / 2, paint);
+                return output;
+            }
 
     private String encodeImageToBase64(Uri imageUri) {
         try {
@@ -322,49 +319,5 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap decodeBase64Image(){
-
-        String base64Image = AuthUser.profileImage;
-        if (base64Image != null && !base64Image.isEmpty()) {
-            try {
-                // Decode the base64 string into bytes
-                byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
-
-                // Convert bytes into a Bitmap
-                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                Bitmap circularBitmap = getCircularBitmap(bitmap);
-                return circularBitmap;
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Invalid image format", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, "No profile image found", Toast.LENGTH_SHORT).show();
-        }
-
-        return null;
-    }
-
-    private Bitmap getCircularBitmap(Bitmap bitmap) {
-        // Creating a new Bitmap with the width and height of the smallest dimension (for the circle)
-        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
-        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-
-        // Creating a Canvas to draw a circular shape on the new Bitmap
-        Canvas canvas = new Canvas(output);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setFilterBitmap(true);
-        paint.setDither(true);
-
-        // Draw a circle
-        canvas.drawCircle(size / 2, size / 2, size / 2, paint);
-
-        // Set the Bitmap as the source for the canvas
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, (size - bitmap.getWidth()) / 2, (size - bitmap.getHeight()) / 2, paint);
-
-        return output;
-    }
 
 }
