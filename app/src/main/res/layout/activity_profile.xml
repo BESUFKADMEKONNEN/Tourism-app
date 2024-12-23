@@ -25,6 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:titleTextColor="@color/white"
+            app:iconTint="@android:color/white"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <!-- Content Section -->
@@ -37,7 +39,7 @@
 
             <!-- Profile Image -->
             <ImageView
-                android:id="@+id/profileImageView"
+                android:id="@+id/profile_image_view"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_gravity="center"
@@ -65,6 +67,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/upload_profile_image"
                 android:layout_marginTop="16dp"
+                android:visibility="gone"
                 android:minHeight="48dp"
                 android:padding="12dp"
                 android:focusable="false"

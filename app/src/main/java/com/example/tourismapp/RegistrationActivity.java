@@ -71,6 +71,15 @@ public class RegistrationActivity extends AppCompatActivity {
 
         // Upload Image Button click listener
         uploadImageButton.setOnClickListener(v -> openImageSelector());
+
+    if(AuthUser.profileImage.isEmpty()) {
+            if (AuthUser.gender.equals("Male")) {
+                profileImageView.setImageResource(R.drawable.ic_male);
+            } else if (AuthUser.gender.equals("Female")) {
+                profileImageView.setImageResource(R.drawable.ic_female);
+            }
+                                        }
+
     }
 
     private void registerUser() {
@@ -96,41 +105,39 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        // Handle image upload if needed
-        if (!isImageUploaded) {
-            Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
-            return;
+        // Handle image upload
+        String encodedImage = null;
+        if (imageUri != null) {
+            encodedImage = encodeImageToBase64(imageUri);
         }
+//        else {
+//            Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         // Get reference to Firebase Realtime Database
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
-        // Convert image to Base64 string
-        String encodedImage = encodeImageToBase64(imageUri);
+        // Create a unique user ID
+        String userId = database.push().getKey();
 
-        if (encodedImage != null) {
-            // Create a unique user ID
-            String userId = database.push().getKey();
+        // Create user object with encoded image
+        User newUser = new User(firstName, lastName, gender, username, password, encodedImage);
 
-            // Create user object with encoded image
-            User newUser = new User(firstName, lastName, gender, username, password, encodedImage);
-
-            // Save the user data in Firebase
-            if (userId != null) {
-                database.child("users").child(userId).setValue(newUser)
-                        .addOnCompleteListener(dbTask -> {
-                            if (dbTask.isSuccessful()) {
-                                Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                            } else {
-                                Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        } else {
-            Toast.makeText(this, "Image encoding failed", Toast.LENGTH_SHORT).show();
+        // Save the user data in Firebase
+        if (userId != null) {
+            database.child("users").child(userId).setValue(newUser)
+                    .addOnCompleteListener(dbTask -> {
+                        if (dbTask.isSuccessful()) {
+                            Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                        } else {
+                            Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
+
 
 
     private String encodeImageToBase64(Uri imageUri) {

@@ -43,7 +43,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity {
-    private static final int IMAGE_REQUEST_CODE = 101;
+    private static final int IMAGE_REQUEST_CODE = 100;
     private String USER_ID;
     private DrawerLayout drawerLayout;
     private EditText firstNameEditText, lastNameEditText, usernameEditText;
@@ -56,6 +56,8 @@ public class ProfileActivity extends AppCompatActivity {
     private Uri imageUri;
     private boolean isImageUploaded = false;
     AuthUser authUser;
+    private ImageView profileImage;
+    private  TextView userEmail;
 
 
 
@@ -64,7 +66,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
          authUser=new AuthUser();
-
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
         lastNameEditText = findViewById(R.id.lastNameEditText);
@@ -76,9 +77,32 @@ public class ProfileActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.btnCancel);
         confirmButton = findViewById(R.id.btnConfirm);
         uploadImageButton = findViewById(R.id.uploadImageButton);
-        profileImageView = findViewById(R.id.profileImageView);
+        profileImageView = findViewById(R.id.profile_image_view);
         usernameView=findViewById(R.id.usernameView);
         confirmPasswordEditLayout=findViewById(R.id.confirmPasswordInputLayout);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+
+        // Get header view to access header elements
+        View headerView = navigationView.getHeaderView(0);
+        profileImage = headerView.findViewById(R.id.profile_image);
+        userEmail = headerView.findViewById(R.id.user_email);
+        userEmail.setText(AuthUser.username);
+
+        if (AuthUser.profileImage != null && !AuthUser.profileImage.trim().isEmpty()) {
+            profileImageView.setImageBitmap(decodeBase64Image());
+            profileImage.setImageBitmap(decodeBase64Image());
+
+        } else {
+            if (AuthUser.gender.equals("Male")) {
+                profileImageView.setImageResource(R.drawable.ic_male);  // Replace with your default image
+                profileImage.setImageResource(R.drawable.ic_male);  // Replace with your default image
+            } else if (AuthUser.gender.equals("Female")) {
+                profileImageView.setImageResource(R.drawable.ic_female);  // Replace with your default image
+                profileImage.setImageResource(R.drawable.ic_female);  // Replace with your default image
+            }
+        }
+
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
@@ -98,12 +122,14 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             genderSpinner.setSelection(0);
         }
+
+
          usernameEditText.setText(AuthUser.username);
          usernameView.setText(AuthUser.username);
          usernameView.setHint("You Can't Change The Username!");
         passwordEditText.setText(AuthUser.password);
         confirmPasswordEditText.setText(AuthUser.password);
-        profileImageView.setImageBitmap(decodeBase64Image());
+
 
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,19 +140,24 @@ public class ProfileActivity extends AppCompatActivity {
                 updateButton.setVisibility(View.GONE);
                 confirmPasswordEditText.setVisibility(View.VISIBLE);
                 confirmPasswordEditLayout.setVisibility(View.VISIBLE);
+                uploadImageButton.setVisibility(View.VISIBLE);
             }
         });
+
+
         uploadImageButton.setOnClickListener(v->openImageSelector());
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeComponents(false);
-                confirmButton.setVisibility(View.INVISIBLE);
-                cancelButton.setVisibility(View.INVISIBLE);
+                confirmButton.setVisibility(View.GONE);
+                cancelButton.setVisibility(View.GONE);
                 updateButton.setVisibility((View.VISIBLE));
                 confirmPasswordEditText.setVisibility(View.INVISIBLE);
-            confirmPasswordEditLayout.setVisibility(View.GONE);
+                confirmPasswordEditLayout.setVisibility(View.GONE);
+                uploadImageButton.setVisibility(View.GONE);
+
             }
         });
 
@@ -136,7 +167,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String firstName = firstNameEditText.getText().toString().trim();
                 String lastName = lastNameEditText.getText().toString().trim();
                 String gender = genderSpinner.getSelectedItem().toString();
-                String username=usernameEditText.getText().toString().trim();
+                String username = usernameEditText.getText().toString().trim();
                 String password = passwordEditText.getText().toString();
                 String confirmPassword = confirmPasswordEditText.getText().toString();
 
@@ -160,11 +191,13 @@ public class ProfileActivity extends AppCompatActivity {
                 }
 
                 // Assuming you have a method to update user details in the AuthUser class or backend
-                String encodedImage = encodeImageToBase64(imageUri);
+                String encodedImage=null;
+                if (imageUri != null) {
+                    encodedImage = encodeImageToBase64(imageUri);
+            }
 
 
-
-                boolean updateSuccessful =AuthUser.updateUserDetails(USER_ID, firstName, lastName, gender,username, password);
+                boolean updateSuccessful =AuthUser.updateUserDetails(USER_ID, firstName, lastName, gender,username, password,encodedImage);
 
                 if (updateSuccessful) {
                     Toast.makeText(ProfileActivity.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
@@ -174,14 +207,32 @@ public class ProfileActivity extends AppCompatActivity {
                     updateButton.setVisibility((View.VISIBLE));
                     confirmPasswordEditText.setVisibility(View.INVISIBLE);
                     confirmPasswordEditLayout.setVisibility(View.GONE);
+                    uploadImageButton.setVisibility(View.GONE);
 
+//                    NavigationView navigationView = findViewById(R.id.nav_view);
+//
+//                    // Get header view to access header elements
+//                    View headerView = navigationView.getHeaderView(0);
+//                    profileImage = headerView.findViewById(R.id.profile_image);
+//
+//                    if (AuthUser.profileImage != null && !AuthUser.profileImage.trim().isEmpty()) {
+//                        profileImageView.setImageBitmap(decodeBase64Image());
+//                        profileImage.setImageBitmap(decodeBase64Image());
+//                    } else {
+//                        if (AuthUser.gender.equals("Male")) {
+//                            profileImageView.setImageResource(R.drawable.ic_male);  // Replace with your default image
+//                            profileImage.setImageResource(R.drawable.ic_male);  // Replace with your default image
+//                        } else if (AuthUser.gender.equals("Female")) {
+//                            profileImageView.setImageResource(R.drawable.ic_female);  // Replace with your default image
+//                            profileImage.setImageResource(R.drawable.ic_female);  // Replace with your default image
+//                        }
+//                    }
+                        refreshPage();
                 } else {
                     Toast.makeText(ProfileActivity.this, "Failed to update profile. Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -193,8 +244,6 @@ public class ProfileActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Initialize NavigationView
-        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -220,6 +269,10 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    private void refreshPage() {
+        finish();
+        startActivity(getIntent());
+    }
 
     private void changeComponents(boolean value) {
         firstNameEditText.setEnabled(value);
@@ -231,14 +284,17 @@ public class ProfileActivity extends AppCompatActivity {
         confirmPasswordEditText.setEnabled(value);
         uploadImageButton.setEnabled(value);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             imageUri = data.getData();
-            profileImageView.setImageURI(imageUri);
+            profileImageView.setImageURI(imageUri); // Display the selected image
             isImageUploaded = true;
+        } else {
+            Toast.makeText(this, "Image selection failed. Please try again.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -247,7 +303,6 @@ public class ProfileActivity extends AppCompatActivity {
         intent.setType("image/*");
         startActivityForResult(intent, IMAGE_REQUEST_CODE);
     }
-
 
     private String encodeImageToBase64(Uri imageUri) {
         try {
@@ -311,8 +366,5 @@ public class ProfileActivity extends AppCompatActivity {
 
         return output;
     }
-
-
-
 
 }

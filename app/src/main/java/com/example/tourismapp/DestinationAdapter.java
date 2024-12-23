@@ -33,7 +33,7 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_destination, parent, false);
         return new ViewHolder(itemView);
     }
-/**/
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Destination destination = destinations.get(position);
