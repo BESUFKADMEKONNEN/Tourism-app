@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -84,10 +87,17 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
+        if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+            Toast.makeText(this, "Enter a valid Email.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (!password.equals(confirmPassword)) {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
         // Encode image if available
         String encodedImage = null;
@@ -100,7 +110,7 @@ public class RegistrationActivity extends AppCompatActivity {
         String userId = database.push().getKey();
 
         if (userId != null) {
-            User newUser = new User(firstName, lastName, gender, username, password, encodedImage);
+            User newUser = new User(firstName, lastName, gender, username, hashedPassword, encodedImage);
             database.child("users").child(userId).setValue(newUser)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

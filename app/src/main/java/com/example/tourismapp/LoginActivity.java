@@ -3,6 +3,7 @@ package com.example.tourismapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -64,6 +67,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(final String username, final String password) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+            Toast.makeText(LoginActivity.this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         usersRef.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -71,9 +79,9 @@ public class LoginActivity extends AppCompatActivity {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
 
-                        if (user != null && user.password.equals(password)) {
+                        if (user != null && BCrypt.checkpw(password, user.password)) {
                             // Login successful
-                            authUser = new AuthUser(user.firstName,user.lastName,user.gender,user.username,user.password, snapshot.getKey(),user.profileImageUrl); // Store authenticated user info
+                            authUser = new AuthUser(user.firstName, user.lastName, user.gender, user.username, password, snapshot.getKey(), user.profileImageUrl); // Store authenticated user info
                             Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
                             // Proceed to next activity (e.g., MainActivity)

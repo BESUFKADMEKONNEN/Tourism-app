@@ -37,6 +37,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -182,6 +184,8 @@ public class ProfileActivity extends NavParent {
                     return;
                 }
 
+                String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
                 String encodedImage = null;
                 if (imageUri != null) {
                     encodedImage = encodeImageToBase64(imageUri);
@@ -191,9 +195,8 @@ public class ProfileActivity extends NavParent {
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 String userId = AuthUser.userId;
                 if (userId != null) {
-                    User updateuser = new User(firstName, lastName, gender, username, password, encodedImage);
                     AuthUser authUser = new AuthUser(firstName,lastName,gender,username,password,userId,encodedImage);
-                    User newUser = new User(firstName, lastName, gender, username, password, encodedImage);
+                    User newUser = new User(firstName, lastName, gender, username, hashedPassword, encodedImage);
                     database.child("users").child(userId).setValue(newUser)
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
