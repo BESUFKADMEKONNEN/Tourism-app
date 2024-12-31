@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/booked"
     tools:context=".MainActivity">
 
     <!-- AppBarLayout with Toolbar -->
@@ -16,7 +17,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -32,7 +33,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search for Tourist Destinations"
+            android:text="@string/search_for_tourist_destinations"
             android:textSize="20sp"
             android:gravity="center"
             android:padding="8dp" />
@@ -40,23 +41,27 @@
         <!-- Search bar -->
         <EditText
             android:id="@+id/searchInput"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Search for Tourist Attractions"
+            android:autofillHints="name"
+            android:hint="@string/search_for_tourist_attractions"
             android:inputType="text"
             android:padding="16dp"
             android:minHeight="48dp"
             android:textSize="18sp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"/>
 
         <!-- Search button -->
         <Button
             android:id="@+id/searchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/search"
             android:layout_gravity="center"
-            android:padding="8dp" />
+            android:padding="8dp"
+            android:background="@drawable/rounded_button"
+            />
 
         <!-- RecyclerView to display results -->
         <androidx.recyclerview.widget.RecyclerView

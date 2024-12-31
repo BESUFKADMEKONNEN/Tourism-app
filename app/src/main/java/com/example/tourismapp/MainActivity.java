@@ -137,6 +137,7 @@ public class MainActivity extends NavParent {
         intent.putExtra("pageId", destination.getPageId());
         intent.putExtra("wikiUrl", "https://en.wikipedia.org/wiki/" + destination.getName());
         startActivity(intent);
+
     }
 
     private void fetchDestinations(int page) {

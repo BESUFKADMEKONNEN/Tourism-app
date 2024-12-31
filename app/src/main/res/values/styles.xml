@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.Launcher" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Set background color to white -->
+        <item name="android:windowBackground">@android:color/white</item>
+        <!-- Set the logo/icon -->
+        <item name="android:icon">@mipmap/ic_icon</item>
+        <!-- Ensure the logo appears centered in the splash screen -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+</resources>

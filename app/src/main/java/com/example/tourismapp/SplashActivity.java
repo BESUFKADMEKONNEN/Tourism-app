@@ -19,7 +19,7 @@ public class SplashActivity extends Activity {
                 // Start the main activity
                 Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
                 startActivity(intent);
-                finish();  // Close SplashActivity so the user cannot go back to it
+                finish();
             }
         }, 2000);  // 2 seconds delay
     }

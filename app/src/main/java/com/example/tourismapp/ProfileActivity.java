@@ -210,6 +210,7 @@ public class ProfileActivity extends NavParent {
                                     uploadImageButton.setVisibility(View.GONE);
                                     refreshPage();
                                     startActivity(new Intent(ProfileActivity.this,MainActivity.class));
+                                    finish();
                                 } else {
                                     Toast.makeText(ProfileActivity.this, "Update failed", Toast.LENGTH_SHORT).show();
                                 }

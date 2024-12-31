@@ -70,6 +70,7 @@ public abstract class NavParent extends AppCompatActivity {
         profileImage.setOnClickListener(v -> {
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
+            finish();
         });
 
         // Set up the navigation item selected listener
@@ -91,17 +92,22 @@ public abstract class NavParent extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.nav_home) {
             startActivity(new Intent(this,MainActivity.class));
+            finish();
         } else if (id == R.id.nav_booked_places) {
             startActivity(new Intent(this, BookedPlacesActivity.class));
+            finish();
         } else if (id == R.id.nav_about) {
             startActivity(new Intent(this, AboutActivity.class));
+            finish();
         } else if (id == R.id.nav_help) {
             Toast.makeText(this, "Help is on development", Toast.LENGTH_SHORT).show();
+            finish();
         } else if (id == R.id.nav_logout) {
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
         } else if (id == R.id.nav_exit_app) {
             Toast.makeText(this, "Thank you for being with us.", Toast.LENGTH_SHORT).show();
-            finish();
+            finishAffinity();
         }
         drawerLayout.closeDrawers(); // Close the drawer after clicking
         return true;

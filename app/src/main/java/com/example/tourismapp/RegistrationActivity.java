@@ -43,7 +43,7 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        FirebaseApp.initializeApp(this);
+        FirebaseApp.initializeApp(RegistrationActivity.this);
 
         // Initialize views
         firstNameEditText = findViewById(R.id.firstNameEditText);
@@ -105,14 +105,19 @@ public class RegistrationActivity extends AppCompatActivity {
             encodedImage = encodeImageToBase64(imageUri);
         }
 
+
+
         // Save user data to Firebase Realtime Database
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         String userId = database.push().getKey();
-
         if (userId != null) {
             User newUser = new User(firstName, lastName, gender, username, hashedPassword, encodedImage);
+
+            Log.i("check1","user: "+userId);
             database.child("users").child(userId).setValue(newUser)
                     .addOnCompleteListener(task -> {
+                        Log.i("check","user: "+task.isSuccessful());
+
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(this, LoginActivity.class));
@@ -122,6 +127,65 @@ public class RegistrationActivity extends AppCompatActivity {
                     });
         }
     }
+
+ /*
+    private void registerUser() {
+        firstName = firstNameEditText.getText().toString().trim();
+        lastName = lastNameEditText.getText().toString().trim();
+        gender = genderSpinner.getSelectedItem().toString();
+        username = usernameEditText.getText().toString().trim();
+        password = passwordEditText.getText().toString().trim();
+        confirmPassword = confirmPasswordEditText.getText().toString().trim();
+
+        if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (gender.equals("Sex")) {
+            Toast.makeText(this, "Please select Your Gender", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Handle image upload if needed
+        // if (!isImageUploaded) {
+        //     Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
+        //     return;
+        // }
+Log.i("first 1","starting");
+        // Get a reference to the Firebase Database
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        // Create a unique user ID (You can use Firebase Authentication for real login system)
+        String userId = database.push().getKey();
+
+        // Create the user object
+        User newUser = new User(firstName, lastName, gender, username, password, ""); // Add profile image URL if applicable
+
+        Log.i("first 1","starting "+userId);
+        // Save the user data under the user ID
+        if (userId != null) {
+
+            database.child("users").child(userId).setValue(newUser)
+                    .addOnCompleteListener(task -> {
+                        Log.i("first 1","starting"+task);
+                        if (task.isSuccessful()) {
+                            Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                            // Proceed to next activity (e.g., MainActivity)
+                            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                        } else {
+                            Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+*/
+
 
     private String encodeImageToBase64(Uri imageUri) {
         try {
