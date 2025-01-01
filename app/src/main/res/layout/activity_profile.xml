@@ -116,8 +116,10 @@
                 android:layout_marginTop="8dp"
                 android:minHeight="48dp"
                 android:enabled="false"
+                android:textColor="@android:color/white"
                 android:background="@android:color/transparent"
-                android:theme="@style/CustomSpinnerStyle"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 />
 
             <!-- Username -->
