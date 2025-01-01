@@ -66,6 +66,12 @@ Here are some screenshots of the app:
  ![Home Screen](sampleTheme/home.jpg)
 
    
+## Detail Explanation
+
+ ![Booked Attractions](sampleTheme/det1.jpg)                        ![Booked Attractions](sampleTheme/det2.jpg)
+
+
+   
 ## Booked Attractions
 
  ![Booked Attractions](sampleTheme/book.jpg)
