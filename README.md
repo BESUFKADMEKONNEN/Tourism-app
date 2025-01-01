@@ -1,6 +1,3 @@
-Here’s the updated README file for **Tourify** with the changes you requested:
-
----
 
 # Tourify
 
@@ -54,32 +51,32 @@ To get started with Tourify, follow these steps:
 
 Here are some screenshots of the app:
 
-##**Registration Screen**
+##Registration Screen**
    
   ![Registration Screen](sampleTheme/resg.jpg)
 
   
-##**Login Screen**
+##Login Screen**
    
  ![User Profile](sampleTheme/login.jpg)
 
  
-##**Home Screen**
+##Home Screen**
   
  ![Home Screen](sampleTheme/home.jpg)
 
    
-##**Booked Attractions**
+##Booked Attractions**
 
  ![Booked Attractions](sampleTheme/book.jpg)
 
    
-##**Navigation Screen**
+##Navigation Screen**
   
  ![Navigation Screen](sampleTheme/nav.jpg)
 
    
-##**User Profile**
+##User Profile**
   
  ![User Profile](sampleTheme/profile.jpg)
 
@@ -92,6 +89,3 @@ This project is licensed under the MIT License.
 
 Besufkad Mekonnen
 
----
-
-Now the README reflects the use of images stored in the `sampleTheme` folder, as per your request! Let me know if you need further adjustments!
