@@ -59,7 +59,11 @@ public class MainActivity extends NavParent {
     private void searchDestinations() {
         String query = searchInput.getText().toString();
         if (!query.isEmpty()) {
-            String url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + query + "&format=json";
+            String url = "https://en.wikipedia.org/w/api.php?action=query&list=search"
+                    + "&srsearch=" + query + " tourist attraction OR natural site OR national park OR landmark"
+                    + " -definition -meaning -concept -overview -people -country -history"
+                    + "&srnamespace=0&format=json";
+
 
             // Make the API call for search results
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
