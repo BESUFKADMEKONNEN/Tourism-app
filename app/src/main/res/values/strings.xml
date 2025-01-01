@@ -41,6 +41,7 @@
     <string name="search_for_tourist_attractions">Search for Tourist Attractions</string>
     <string name="search">Search</string>
     <string name="search_for_tourist_destinations">Search for Tourist Destinations</string>
+    <string name="email">Email\n</string>
 
     <string-array name="gender_options">
         <item>Sex</item>

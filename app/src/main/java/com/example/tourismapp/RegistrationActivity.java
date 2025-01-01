@@ -14,12 +14,16 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -97,6 +101,84 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if username already exists
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child("users").orderByChild("username").equalTo(username)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Toast.makeText(RegistrationActivity.this, "Username is already taken. Please choose another one.", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
+
+                    String encodedImage = null;
+                    if (imageUri != null) {
+                        encodedImage = encodeImageToBase64(imageUri);
+                    }
+
+
+                    String userId = database.push().getKey();
+                    if (userId != null) {
+                        User newUser = new User(firstName, lastName, gender, username, hashedPassword, encodedImage);
+
+                        database.child("users").child(userId).setValue(newUser)
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                    } else {
+                                        Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(RegistrationActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+
+    /*
+
+    private void registerUser() {
+        // Retrieve input data
+        firstName = firstNameEditText.getText().toString().trim();
+        lastName = lastNameEditText.getText().toString().trim();
+        gender = genderSpinner.getSelectedItem().toString();
+        username = usernameEditText.getText().toString().trim();
+        password = passwordEditText.getText().toString().trim();
+        confirmPassword = confirmPasswordEditText.getText().toString().trim();
+
+        // Validate inputs
+        if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (gender.equals("Sex")) {
+            Toast.makeText(this, "Please select your gender", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+            Toast.makeText(this, "Enter a valid Email.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
         // Encode image if available
@@ -128,65 +210,8 @@ public class RegistrationActivity extends AppCompatActivity {
         }
     }
 
- /*
-    private void registerUser() {
-        firstName = firstNameEditText.getText().toString().trim();
-        lastName = lastNameEditText.getText().toString().trim();
-        gender = genderSpinner.getSelectedItem().toString();
-        username = usernameEditText.getText().toString().trim();
-        password = passwordEditText.getText().toString().trim();
-        confirmPassword = confirmPasswordEditText.getText().toString().trim();
 
-        if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (gender.equals("Sex")) {
-            Toast.makeText(this, "Please select Your Gender", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!password.equals(confirmPassword)) {
-            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Handle image upload if needed
-        // if (!isImageUploaded) {
-        //     Toast.makeText(this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
-        //     return;
-        // }
-Log.i("first 1","starting");
-        // Get a reference to the Firebase Database
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
-        // Create a unique user ID (You can use Firebase Authentication for real login system)
-        String userId = database.push().getKey();
-
-        // Create the user object
-        User newUser = new User(firstName, lastName, gender, username, password, ""); // Add profile image URL if applicable
-
-        Log.i("first 1","starting "+userId);
-        // Save the user data under the user ID
-        if (userId != null) {
-
-            database.child("users").child(userId).setValue(newUser)
-                    .addOnCompleteListener(task -> {
-                        Log.i("first 1","starting"+task);
-                        if (task.isSuccessful()) {
-                            Toast.makeText(RegistrationActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                            // Proceed to next activity (e.g., MainActivity)
-                            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                        } else {
-                            Toast.makeText(RegistrationActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-    }
 */
-
-
     private String encodeImageToBase64(Uri imageUri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(imageUri);

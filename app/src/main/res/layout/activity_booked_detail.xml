@@ -50,6 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="24sp"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     android:paddingTop="16dp" />
 
@@ -59,6 +60,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
+                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <!-- Country display -->
@@ -67,6 +69,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
                     android:paddingTop="8dp"
                     android:text="Country: " />
 
@@ -76,6 +80,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
                     android:paddingTop="8dp"
                     android:text="@string/state_province" />
 

@@ -51,6 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="24sp"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     android:paddingTop="16dp" />
 
@@ -60,6 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
+                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <!-- Country display -->
@@ -69,6 +71,8 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:paddingTop="8dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
                     android:text="Country: " />
 
                 <!-- State/Province display -->
@@ -78,6 +82,8 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:paddingTop="8dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
                     android:text="@string/state_province" />
 
                 <!-- Price display (new TextView for price) -->

@@ -74,26 +74,35 @@ public class BookedPlacesAdapter extends RecyclerView.Adapter<BookedPlacesAdapte
     private void deleteFromFirebase(String pageId, int position) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("bookmarks");
         Query query = databaseReference.orderByChild("pageId").equalTo(pageId);
+
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    snapshot.getRef().removeValue()
-                            .addOnSuccessListener(aVoid -> {
-                                bookedPlaces.remove(position);
-                                notifyItemRemoved(position);
-                                notifyItemRangeChanged(position, bookedPlaces.size());
-                                Toast.makeText(context, "Item deleted successfully.", Toast.LENGTH_SHORT).show();
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(context, "Failed to delete: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue()
+                                .addOnSuccessListener(aVoid -> {
+                                    // Ensure the index is valid
+                                    if (position >= 0 && position < bookedPlaces.size()) {
+                                        bookedPlaces.remove(position);
+                                        notifyItemRemoved(position);
+
+                                        // Optional: Update the range if needed
+                                        // notifyItemRangeChanged(position, bookedPlaces.size());
+                                    }
+                                    Toast.makeText(context, "Item deleted successfully.", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(context, "Failed to delete: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                } else {
+                    Toast.makeText(context, "Item not found in Firebase.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle possible errors
                 Toast.makeText(context, "Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

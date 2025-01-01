@@ -9,4 +9,10 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
+    <style name="CustomSpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:popupBackground">@android:color/transparent</item> <!-- Optional for dropdown background -->
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
 </resources>

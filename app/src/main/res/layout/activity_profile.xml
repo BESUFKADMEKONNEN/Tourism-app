@@ -51,7 +51,8 @@
                 android:id="@+id/usernameView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/unknown"
+                android:text="@string/email"
+                android:textColor="@color/white"
                 android:layout_marginTop="16dp"
                 android:minHeight="48dp"
                 android:padding="12dp"
@@ -64,16 +65,17 @@
             <!-- Upload Image Button -->
             <Button
                 android:id="@+id/uploadImageButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/upload_profile_image"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/rounded_button"
                 android:layout_marginTop="16dp"
                 android:visibility="gone"
                 android:minHeight="48dp"
                 android:padding="12dp"
                 android:focusable="false"
                 android:clickable="false"
-                android:background="@android:color/transparent"
                 android:enabled="false"/>
 
             <!-- First Name -->
@@ -84,6 +86,7 @@
                 android:hint="@string/first_name"
                 android:inputType="textPersonName"
                 android:autofillHints="name"
+                android:textColor="@color/white"
                 android:padding="12dp"
                 android:layout_marginTop="8dp"
                 android:minHeight="48dp"
@@ -96,6 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/last_name"
+                android:textColor="@color/white"
                 android:inputType="textPersonName"
                 android:autofillHints="name"
                 android:padding="12dp"
@@ -114,6 +118,8 @@
                 android:enabled="false"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:background="@android:color/transparent"
+                android:theme="@style/CustomSpinnerStyle"
                 />
 
             <!-- Username -->
@@ -124,6 +130,7 @@
                 android:hint="@string/username"
                 android:autofillHints="username"
                 android:inputType="textEmailAddress"
+                android:textColor="@color/white"
                 android:padding="12dp"
                 android:layout_marginTop="8dp"
                 android:minHeight="48dp"
@@ -136,6 +143,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/password"
+                android:textColorHint="@color/white"
+                android:background="@android:color/transparent"
+                android:textColor="@color/white"
                 app:endIconMode="password_toggle"
                 >
 
@@ -145,6 +155,8 @@
                     android:layout_height="wrap_content"
                     android:autofillHints="password"
                     android:inputType="textPassword"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/white"
                     android:padding="12dp"
                     android:minHeight="48dp"
                     android:enabled="false"
@@ -160,6 +172,9 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/confirm_password"
                 app:endIconMode="password_toggle"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"
+                android:textColorHint="@color/white"
                 android:visibility="invisible">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -168,6 +183,8 @@
                     android:layout_height="wrap_content"
                     android:autofillHints="password"
                     android:inputType="textPassword"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/white"
                     android:padding="12dp"
                     android:minHeight="48dp"
                     android:enabled="false"

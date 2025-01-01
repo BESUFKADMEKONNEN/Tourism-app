@@ -46,17 +46,16 @@ public class BookedPlacesActivity extends NavParent {
         // Fetch booked places data from Firebase
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("bookmarks");
         databaseReference.orderByChild("userId").equalTo(currentUserId).addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 bookedPlaces.clear(); // Clear previous data
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // Retrieve each destination from Firebase
                     String name = snapshot.child("name").getValue(String.class);
                     String details = snapshot.child("details").getValue(String.class);
                     String imageUrl = snapshot.child("imageUrl").getValue(String.class);
                     String pageId = snapshot.child("pageId").getValue(String.class);
 
-                    // Create a Destination object
                     Destination destination = new Destination(name, details, imageUrl, pageId);
                     bookedPlaces.add(destination);
                 }
@@ -65,19 +64,21 @@ public class BookedPlacesActivity extends NavParent {
                     recyclerView.setVisibility(View.VISIBLE);
                     noBookedPlacesTextView.setVisibility(View.GONE);
 
-                    // Set up RecyclerView with updated data
-                    adapter = new BookedPlacesAdapter(BookedPlacesActivity.this, bookedPlaces, destination -> {
-                        Intent intent = new Intent(BookedPlacesActivity.this, BookedDetailActivity.class);
-                        intent.putExtra("name", destination.getName());
-                        intent.putExtra("details", destination.getDetails());
-                        intent.putExtra("image", destination.getImageUrl());
-                        intent.putExtra("pageId", destination.getPageId());
-                        intent.putExtra("wikiUrl", "https://en.wikipedia.org/wiki/" + destination.getName());
-                        startActivity(intent);
-                    });
-
-                    recyclerView.setLayoutManager(new LinearLayoutManager(BookedPlacesActivity.this));
-                    recyclerView.setAdapter(adapter);
+                    if (adapter == null) {
+                        adapter = new BookedPlacesAdapter(BookedPlacesActivity.this, bookedPlaces, destination -> {
+                            Intent intent = new Intent(BookedPlacesActivity.this, BookedDetailActivity.class);
+                            intent.putExtra("name", destination.getName());
+                            intent.putExtra("details", destination.getDetails());
+                            intent.putExtra("image", destination.getImageUrl());
+                            intent.putExtra("pageId", destination.getPageId());
+                            intent.putExtra("wikiUrl", "https://en.wikipedia.org/wiki/" + destination.getName());
+                            startActivity(intent);
+                        });
+                        recyclerView.setLayoutManager(new LinearLayoutManager(BookedPlacesActivity.this));
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        adapter.notifyDataSetChanged();
+                    }
                 } else {
                     recyclerView.setVisibility(View.GONE);
                     noBookedPlacesTextView.setVisibility(View.VISIBLE);
