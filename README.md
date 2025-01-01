@@ -54,12 +54,35 @@ To get started with Tourify, follow these steps:
 
 Here are some screenshots of the app:
 
-1. **Registration Screen**: ![Registration Screen](sampleTheme/resg.jpg)
-2. **Login Screen**: ![User Profile](sampleTheme/login.jpg)
-3. **Home Screen**: ![Home Screen](sampleTheme/home.jpg)
-4. **Booked Attractions**: ![Booked Attractions](sampleTheme/book.jpg)
-5. **Navigation Screen**: ![Navigation Screen](sampleTheme/nav.jpg)
-6. **User Profile**: ![User Profile](sampleTheme/profile.jpg)
+1. ##**Registration Screen**
+   
+  ![Registration Screen](sampleTheme/resg.jpg)
+
+  
+2. ##**Login Screen**
+   
+ ![User Profile](sampleTheme/login.jpg)
+
+ 
+3. ##**Home Screen**
+  
+    ![Home Screen](sampleTheme/home.jpg)
+
+   
+4. ##**Booked Attractions**
+
+    ![Booked Attractions](sampleTheme/book.jpg)
+
+   
+5. ##**Navigation Screen**
+  
+   ![Navigation Screen](sampleTheme/nav.jpg)
+
+   
+6. ##**User Profile**
+  
+    ![User Profile](sampleTheme/profile.jpg)
+
 
 ## License
 
