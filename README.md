@@ -51,32 +51,32 @@ To get started with Tourify, follow these steps:
 
 Here are some screenshots of the app:
 
-##Registration Screen**
+## Registration Screen
    
   ![Registration Screen](sampleTheme/resg.jpg)
 
   
-##Login Screen**
+## Login Screen
    
  ![User Profile](sampleTheme/login.jpg)
 
  
-##Home Screen**
+## Home Screen
   
  ![Home Screen](sampleTheme/home.jpg)
 
    
-##Booked Attractions**
+## Booked Attractions
 
  ![Booked Attractions](sampleTheme/book.jpg)
 
    
-##Navigation Screen**
+## Navigation Screen
   
  ![Navigation Screen](sampleTheme/nav.jpg)
 
    
-##User Profile**
+## User Profile
   
  ![User Profile](sampleTheme/profile.jpg)
 
