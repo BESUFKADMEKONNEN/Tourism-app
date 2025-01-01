@@ -94,10 +94,38 @@ public class DestinationDetailActivity extends NavParent {
             double latitude = getIntent().getDoubleExtra("latitude", 0);
             double longitude = getIntent().getDoubleExtra("longitude", 0);
             Uri gmmIntentUri = Uri.parse("geo:" + latitude + "," + longitude);
+
+            // Create an Intent to open Google Maps
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
-            startActivity(mapIntent);
+
+            // Check if Google Maps is available to handle the intent
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            } else {
+                // Notify the user with an alert box
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Google Maps Not Found")
+                        .setMessage("Google Maps app is not available on this device. Do you want to open the location in your browser?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            // Open the location in the default browser
+                            Uri webUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + latitude + "," + longitude);
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, webUri);
+
+                            if (browserIntent.resolveActivity(getPackageManager()) != null) {
+                                startActivity(browserIntent);
+                            } else {
+                                Toast.makeText(this, "No browser available to open the location.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("No", (dialog, which) -> {
+                            // Dismiss the dialog if the user chooses "No"
+                            dialog.dismiss();
+                        })
+                        .show();
+            }
         });
+
 
         bookButton.setOnClickListener(v -> {
             addBookmark(pageId,name,details,imageUrl,wikiUrl,userId);

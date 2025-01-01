@@ -233,8 +233,6 @@ public class ProfileActivity extends NavParent {
         firstNameEditText.setEnabled(value);
         lastNameEditText.setEnabled(value);
         genderSpinner.setEnabled(value);
-        genderSpinner.setFocusable(value);
-        genderSpinner.setFocusableInTouchMode(value);
         passwordEditText.setEnabled(value);
         confirmPasswordEditText.setEnabled(value);
         uploadImageButton.setEnabled(value);
